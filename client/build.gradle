@@ -1,0 +1,8 @@
+apply plugin: 'application'
+mainClassName = "ru.aldan95.xtest.client.Client"
+dependencies {
+    compile project(':common')
+    testCompile project(':server')
+    //testRuntime project(':server')
+    testCompile project(':service')
+}

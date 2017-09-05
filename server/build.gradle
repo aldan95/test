@@ -1,0 +1,9 @@
+apply plugin: 'application'
+
+mainClassName = "ru.aldan95.xtest.server.Server"
+
+dependencies {
+    compile project(':common')
+    compile project(':service')
+}
+

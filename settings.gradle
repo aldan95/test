@@ -1,0 +1,3 @@
+rootProject.name = 'xtest'
+
+include 'server', 'client', 'common', 'service'
