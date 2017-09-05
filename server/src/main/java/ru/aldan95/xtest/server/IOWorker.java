@@ -10,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -24,13 +23,13 @@ public class IOWorker implements Runnable {
     private final Encoder encoder;
     private final DataInputStream inputStream;
     private final DataOutputStream outputStream;
-    private final Map<String, Object> services;
+    private final ServiceResolver serviceResolver;
 
-    IOWorker(Socket socket, Encoder encoder, ExecutorService serverExecutor, Map<String, Object> services) throws IOException {
+    IOWorker(Socket socket, Encoder encoder, ExecutorService serverExecutor, ServiceResolver serviceResolver) throws IOException {
         this.socket = socket;
         this.encoder = encoder;
         this.serverExecutor = serverExecutor;
-        this.services = services;
+        this.serviceResolver = serviceResolver;
         try {
             this.inputStream = new DataInputStream(socket.getInputStream());
             this.outputStream = new DataOutputStream(socket.getOutputStream());
@@ -71,7 +70,7 @@ public class IOWorker implements Runnable {
             inputStream.readFully(buf);
             Request request = encoder.decode(buf);
             logger.info("Received id={}:{}.{} with params {}", request.getId(), request.getService(), request.getMethod(), request.getParams());
-            Object service = services.get(request.getService());
+            Object service = serviceResolver.resolve(request.getService());
             serverExecutor.execute(new ServerWorker(request, service, this::sendResponse));
         }
     }
